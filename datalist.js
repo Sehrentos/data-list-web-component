@@ -1,7 +1,7 @@
 /**
  * The data-list web component
  */
-class DataList extends HTMLElement {
+ class DataList extends HTMLElement {
     static isWindowEventsBinded = false
     // static timeoutDebounceOpen = null // debounce event focusin|click to open the UI view
     static timeoutDebounceInput = null // debounce event input to filter UI elements
@@ -271,6 +271,9 @@ class DataList extends HTMLElement {
 
     /**
      * update CSS height, position, etc.
+     * 
+     * @todo Enhance the max-height calculations
+     * 
      * @param {*} article 
      * @param {*} target 
      */
