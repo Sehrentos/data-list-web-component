@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DataList web component</title>
+    <meta name="description" content="data-list web component sample">
+    <script src="datalist.js"></script>
+    <style>
+        form {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            /*align-items: flex-start;*/
+            align-content: space-between;
+            row-gap: 2em;
+            /*column-gap: 1em;*/
+            margin: 5em;
+            padding: 3em 2em;
+            border: 1px solid #bbbbbb;
+        }
+
+        form header {
+            font-size: 150%;
+            width: 100%;
+        }
+
+        form fieldset {
+            border-width: 1px;
+            border-radius: 0.4em;
+            margin: 0;
+        }
+
+        form fieldset input {
+            width: max-content;
+            /*outline: 0;
+            border: none;*/
+        }
+    </style>
+</head>
+
+<body>
+    <form id="details">
+        <header>Custom DataList sample</header>
+        <fieldset>
+            <legend>Test-1</legend>
+            <input type="text" id="test-1" name="test-1" list="list-test-1" />
+            <data-list id="list-test-1" hidden>
+                <option value="test-1" label="Value 1">Lorem description...</option>
+                <option value="test-2">Value 2</option>
+                <option value="test-3"></option>
+            </data-list>
+        </fieldset>
+        <fieldset>
+            <legend>Test-2</legend>
+            <input type="text" id="test-2" name="test-2" list="list-test-2" />
+            <data-list id="list-test-2" hidden>
+                <option value="test-1" label="Value 1">Lorem description...</option>
+                <option value="test-2">Value 2</option>
+                <option value="test-3"></option>
+            </data-list>
+        </fieldset>
+        <fieldset>
+            <legend>Test-3</legend>
+            <input type="text" id="test-3" name="test-3" list="list-test-3" />
+            <data-list id="list-test-3" hidden>
+                <option value="test-1" label="Value 1">Lorem description...</option>
+                <option value="test-10">Value 10</option>
+                <option value="test-2">Value 2</option>
+                <option value="test-20">Value 20</option>
+                <option value="test-3"></option>
+                <option value="test-30"></option>
+            </data-list>
+        </fieldset>
+        <fieldset>
+            <legend>Test-4</legend>
+            <input type="text" id="test-4" name="test-4" list="list-test-4" />
+            <data-list id="list-test-4" hidden>
+                <option value="test-1" label="Value 1">Lorem description...</option>
+                <option value="test-2">Value 2</option>
+                <option value="test-3"></option>
+            </data-list>
+        </fieldset>
+        <fieldset>
+            <legend>Test-5 (normal datalist)</legend>
+            <input type="text" id="test-5" name="test-5" list="list-test-5" />
+            <datalist id="list-test-5" hidden>
+                <option value="test-1" label="Value 1">Lorem description...</option>
+                <option value="test-2">Value 2</option>
+                <option value="test-3"></option>
+                </data-list>
+        </fieldset>
+    </form>
+</body>
+
+</html>
