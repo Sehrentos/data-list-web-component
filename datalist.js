@@ -1,7 +1,7 @@
 /**
  * The data-list web component
  */
- class DataList extends HTMLElement {
+class DataList extends HTMLElement {
     static isWindowEventsBinded = false
     // static timeoutDebounceOpen = null // debounce event focusin|click to open the UI view
     static timeoutDebounceInput = null // debounce event input to filter UI elements
@@ -136,7 +136,7 @@
     //     this.updateStyle()
     // }
 
-    /** bind special events, like `input[list="myList"]` `focusin`, `focusout` */
+    /** bind events to `input[list]` */
     updateBindings() {
         if (!this.id) return console.warn("DataList web component does not have target 'id' set.")
         const shadow = this.shadowRoot
@@ -273,6 +273,7 @@
      * update CSS height, position, etc.
      * 
      * @todo Enhance the max-height calculations
+     * @todo In fixed full screen, show input element at the top
      * 
      * @param {*} article 
      * @param {*} target 
@@ -324,14 +325,17 @@
         this.shadowRoot.querySelector("article").append(...values)
     }
 
+    /** create option element for data-list */
+    createOption(value, label, textContent) {
+        const option = document.createElement("option")
+        option.value = value
+        if (label != null && textContent != null) option.label = label
+        option.textContent = textContent != null ? textContent : label
+        return option
+    }
+
     /** create row as section element */
     createSection(value, label, textContent) {
-        // create option element for data-list
-        // const option = document.createElement("option")
-        // option.value = value
-        // if (label != null && textContent != null) option.label = label
-        // option.textContent = textContent != null ? textContent : label
-
         // create section element for shadow article
         const section = document.createElement("section")
 
@@ -378,10 +382,11 @@
 
     /** empty all list items */
     empty() {
-        const rows = this.rows
-        for (const row of rows) {
-            row.remove()
-        }
+        // const rows = this.rows
+        // for (const row of rows) {
+        //     row.remove()
+        // }
+        this.shadowRoot.querySelector("article").innerHTML = ""
     }
 
     /** update CSS container */
