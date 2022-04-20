@@ -7,7 +7,7 @@ class DataList extends HTMLElement {
     static timeoutDebounceInput = null // debounce event input to filter UI elements
     static timeoutInputFocusout = null
     static timeoutMousedown = null
-    static timeoutThrottleResize = { timer: null, callback: null, delay: 200 }
+    static timeoutThrottleResize = null
 
     // Note that to get the attributeChangedCallback() callback to fire when an attribute changes, you have to observe the attributes.
     // This is done by specifying a static get observedAttributes() method inside custom element class - this should return 
@@ -116,8 +116,7 @@ class DataList extends HTMLElement {
     // life-cycle callback: Invoked each time the custom element is disconnected from the document's DOM
     disconnectedCallback() {
         // console.log("Custom DataList element removed from page.")
-        DataList.timeoutThrottleResize.timer = null
-        window.clearTimeout(DataList.timeoutThrottleResize.timer)
+        window.clearTimeout(DataList.timeoutThrottleResize)
         window.clearTimeout(DataList.timeoutDebounceInput)
         window.clearTimeout(DataList.timeoutInputFocusout)
         window.clearTimeout(DataList.timeoutMousedown)
@@ -152,11 +151,15 @@ class DataList extends HTMLElement {
                 // console.log("event bindings has target:", target)
 
                 target.addEventListener("resize", (e) => {
-                    // console.log(e.type, "event bindings")
-                    window.clearTimeout(DataList.timeoutMousedown)
-                    window.clearTimeout(DataList.timeoutInputFocusout)
-                    //this.setAttribute("hidden", "")
-                    this.updateSize(article, e.target)
+                    try {
+                        // console.log(e.type, "event bindings")
+                        window.clearTimeout(DataList.timeoutMousedown)
+                        window.clearTimeout(DataList.timeoutInputFocusout)
+                        //this.setAttribute("hidden", "")
+                        this.updateSize(article, e.target)
+                    } catch (error) {
+                        console.error("DataList input[list] resize event failure", error)
+                    }
                 })
 
                 // clicking the datalist will open the UI
@@ -446,15 +449,18 @@ class DataList extends HTMLElement {
     }
 
     static windowResizeHandler(event) {
-        DataList.timeoutThrottleResize.callback = () => {
-            DataList.timeoutThrottleResize = null
-            const targets = document.querySelectorAll("input[list]") // binded to these inputs
-            for (const target of targets) {
-                target.dispatchEvent(new Event("resize"))
-            }
+        try {
+            if (DataList.timeoutThrottleResize != null) return
+            DataList.timeoutThrottleResize = setTimeout(() => {
+                DataList.timeoutThrottleResize = null
+                const targets = document.querySelectorAll("input[list]") // binded to these inputs
+                for (const target of targets) {
+                    target.dispatchEvent(new Event("resize"))
+                }
+            }, 200)
+        } catch (error) {
+            console.error("DataList window resize event failure", error)
         }
-        if (DataList.timeoutThrottleResize.timer != null) return
-        DataList.timeoutThrottleResize.timer = setTimeout(DataList.timeoutThrottleResize.callback, DataList.timeoutThrottleResize.delay)
     }
 }
 customElements.define("data-list", DataList)
