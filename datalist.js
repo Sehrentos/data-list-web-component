@@ -275,7 +275,6 @@ class DataList extends HTMLElement {
     /**
      * update CSS height, position, etc.
      * 
-     * @todo Enhance the max-height calculations
      * @todo In fixed full screen, show input element at the top
      * 
      * @param {*} article 
@@ -287,10 +286,12 @@ class DataList extends HTMLElement {
         // make it begin at the element bottom
         article.style.top = `${rect.top + rect.height}px`
         article.style.left = `${rect.left}px`
-        article.style.maxHeight = `calc(50vh - ${rect.top - window.scrollY}px - 1em)`
-        article.style.width = `calc(100vw - ${rect.width}px)` // keep width limited
-        article.style.maxWidth = `${rect.width}px`
-        //console.log(`updateSize height:${height}; scrollY: ${window.scrollY}; rect:`, rect)
+        //article.style.maxHeight = `calc(50vh - ${rect.top - window.scrollY}px - 1em)`
+        article.style.maxHeight = `calc(100vh - ${rect.top/* + window.scrollY*/}px - 2em)`
+        //article.style.width = `calc(100vw - ${rect.width}px)` // keep width limited
+        //article.style.maxWidth = `${rect.width}px`
+        article.style.width = `${rect.width}px`
+        //console.log(`updateSize clientHeight:${clientHeight}, scrollY: ${window.scrollY}, rect:`, rect)
         // tiny screen will use fixed full screen instead
         if (clientHeight < 450) {
             article.style.position = "fixed"
@@ -301,9 +302,21 @@ class DataList extends HTMLElement {
         }
         // when input goes below this height, swap top position instead
         else if (rect.top > clientHeight / 2) {
-            article.style.top = "initial"
-            article.style.bottom = `calc(100vh - ${rect.top + window.scrollY}px)`
+            console.log("to top")
+            //article.style.background = "green"
+            article.style.top = "auto"
+            //article.style.top = "1em"
+            //article.style.height = `calc(${rect.top}px - 1em)`//`calc(100vh - ${rect.top/* + window.scrollY*/}px - 1em)`
+            article.style.maxHeight = `calc(${rect.top}px - 1em)`
+            //article.style.alignItems = "end"
+            //article.style.maxHeight = `calc(100vh - ${rect.top/* + window.scrollY*/}px - 1em)`
+            //article.style.top = `calc(100vh - ${rect.top}px)`
+            //article.style.height = `calc(100vh + ${rect.top}px - 100vh)`
+            //article.style.maxHeight = `calc(100vh - ${clientHeight - rect.top}px - 2em)`
+            //article.style.bottom = `calc(100vh - ${rect.top/* + window.scrollY*/}px)`
+            article.style.bottom = `calc(100vh - ${rect.top + window.scrollY}px`
         }
+        console.log("updateSize", article.getAttribute("style"), rect)
     }
 
     /** add items to the list */
