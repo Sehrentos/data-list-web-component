@@ -155,7 +155,6 @@ class DataList extends HTMLElement {
                         // console.log(e.type, "event bindings")
                         window.clearTimeout(DataList.timeoutMousedown)
                         window.clearTimeout(DataList.timeoutInputFocusout)
-                        //this.setAttribute("hidden", "")
                         this.updateSize(article, e.target)
                     } catch (error) {
                         console.error("DataList input[list] resize event failure", error)
@@ -168,19 +167,8 @@ class DataList extends HTMLElement {
                     this.processChildElements()
                     this.removeAttribute("hidden")
                     this.updateSize(article, e.target)
-                    // this.open(article, e.target.value)
                     this.filterRows(article, e.target.value)
                 })
-
-                // datalist focus does not open the UI
-                // target.addEventListener("focusin", (e) => {
-                //     // console.log(e.type, "event bindings")
-                //     // this.processChildElements()
-                //     this.removeAttribute("hidden")
-                //     this.updateSize(article, e.target)
-                //     this.open(article, e.target.value)
-                //     // this.filterRows(article, e.target.value)
-                // })
 
                 target.addEventListener("focusout", (e) => {
                     // console.log(e.type, "event bindings")
@@ -202,18 +190,6 @@ class DataList extends HTMLElement {
             })
         }
     }
-
-    /** open the data-list view */
-    // open(article, value) {
-    //     if (DataList.timeoutDebounceOpen != null) return // is already in opening state
-    //     clearTimeout(DataList.timeoutDebounceOpen)
-    //     DataList.timeoutDebounceOpen = setTimeout(() => {
-    //         DataList.timeoutDebounceOpen = null
-    //         // console.log("open timeoutDebounceOpen")
-    //         this.processChildElements()
-    //         this.filterRows(article, value)
-    //     }, 20)
-    // }
 
     /**
      * create list items from child option elements
@@ -286,12 +262,8 @@ class DataList extends HTMLElement {
         // make it begin at the element bottom
         article.style.top = `${rect.top + rect.height}px`
         article.style.left = `${rect.left}px`
-        //article.style.maxHeight = `calc(50vh - ${rect.top - window.scrollY}px - 1em)`
         article.style.maxHeight = `calc(100vh - ${rect.top/* + window.scrollY*/}px - 2em)`
-        //article.style.width = `calc(100vw - ${rect.width}px)` // keep width limited
-        //article.style.maxWidth = `${rect.width}px`
         article.style.width = `${rect.width}px`
-        //console.log(`updateSize clientHeight:${clientHeight}, scrollY: ${window.scrollY}, rect:`, rect)
         // tiny screen will use fixed full screen instead
         if (clientHeight < 450) {
             article.style.position = "fixed"
@@ -302,21 +274,10 @@ class DataList extends HTMLElement {
         }
         // when input goes below this height, swap top position instead
         else if (rect.top > clientHeight / 2) {
-            console.log("to top")
-            //article.style.background = "green"
             article.style.top = "auto"
-            //article.style.top = "1em"
-            //article.style.height = `calc(${rect.top}px - 1em)`//`calc(100vh - ${rect.top/* + window.scrollY*/}px - 1em)`
             article.style.maxHeight = `calc(${rect.top}px - 1em)`
-            //article.style.alignItems = "end"
-            //article.style.maxHeight = `calc(100vh - ${rect.top/* + window.scrollY*/}px - 1em)`
-            //article.style.top = `calc(100vh - ${rect.top}px)`
-            //article.style.height = `calc(100vh + ${rect.top}px - 100vh)`
-            //article.style.maxHeight = `calc(100vh - ${clientHeight - rect.top}px - 2em)`
-            //article.style.bottom = `calc(100vh - ${rect.top/* + window.scrollY*/}px)`
             article.style.bottom = `calc(100vh - ${rect.top + window.scrollY}px`
         }
-        console.log("updateSize", article.getAttribute("style"), rect)
     }
 
     /** add items to the list */
