@@ -172,7 +172,8 @@ class DataList extends HTMLElement {
                 window.clearTimeout(DataList.timeoutInputFocusout)
                 DataList.timeoutInputFocusout = window.setTimeout(() => { // delayed for the click event to pass-through
                     try {
-                        this.setAttribute("hidden", "")
+                        // hide only, when target changed
+                        if (document.activeElement != e.target) this.setAttribute("hidden", "")
                     } catch (error) {
                         console.error(`DataList input[list="${this.id}"] focusout event failure`, error)
                     }
