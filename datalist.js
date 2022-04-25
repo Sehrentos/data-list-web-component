@@ -135,6 +135,9 @@ class DataList extends HTMLElement {
     // life-cycle callback: invoked each time the custom element is appended into a document-connected element
     connectedCallback() {
         if (!this.id) return console.warn("DataList web component does not have target 'id' set.")
+        // optional: make the data-list hidden by default or use CSS:
+        // data-list { display: none; }
+        this.setAttribute("hidden", "")
 
         const article = this.shadowRoot.querySelector("article")
 
