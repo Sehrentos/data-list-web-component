@@ -1,9 +1,64 @@
+const template = document.createElement("template")
+template.innerHTML = `<style>
+article::-webkit-scrollbar {
+    width: .2em;
+  }
+  article::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+  article::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    outline: 1px solid slategrey;
+  }
+  article {
+    position: absolute;
+    top: 1em;
+    left: 2em;
+    z-index: 99999;
+    box-sizing: border-box;
+    max-height: 50vh;
+    border-width: 1px;
+    border-color: #cccccc;
+    border-style: solid;
+    border-radius: 0.4em;
+    background-color: #ffffff;
+    overflow-y: auto;
+    font-family: system-ui;
+  }
+  [hidden] { display: none; }
+  section {
+    margin: 0 0.5em;
+    padding: 0.5em 0;
+    border-bottom-width: 1px;
+    border-bottom-color: #cccccc;
+    border-bottom-style: solid;
+    content-visibility: auto;
+    contain-intrinsic-size: 57px;
+  }
+  .no-border-bottom,
+  section:last-child {
+    border-bottom: none;
+  }
+  section h2 {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+    font-size: 1em;
+    font-weight: normal;
+    color: #000000;
+  }
+  section p {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+    color: #626262;
+  }
+</style>
+<article></article>`
+
 /**
  * The data-list web component
  */
 class DataList extends HTMLElement {
     static isWindowEventsBinded = false
-    // static timeoutDebounceOpen = null // debounce event focusin|click to open the UI view
     static timeoutDebounceInput = null // debounce event input to filter UI elements
     static timeoutInputFocusout = null
     static timeoutMousedown = null
@@ -15,29 +70,27 @@ class DataList extends HTMLElement {
     // static get observedAttributes() { return ["hidden"] }
 
     constructor() {
-        super() // always call super first
+        super()
 
         // Required window event to inform all elements that require resizing after screen size changes
         if (!DataList.isWindowEventsBinded) {
-            // console.log("binding window.onresize")
-            window.addEventListener("resize", DataList.windowResizeHandler)
             DataList.isWindowEventsBinded = true
+            window.addEventListener("resize", DataList.windowResizeHandler)
         }
-
-        // is node mounted to the document
-        // this.inDom = false
 
         // Create a shadow root
         this.attachShadow({
             mode: "open"
-        }) // sets and returns "this.shadowRoot"
+        })
 
-        // Create elements
-        const article = document.createElement("article")
+        // add template
+        this.shadowRoot.appendChild(template.content.cloneNode(true))
+
+        // get element
+        const article = this.shadowRoot.querySelector("article") // document.createElement("article")
 
         // Event bindings (this fires before focusout)
         article.addEventListener("touchstart", (e) => {
-            // console.log(e.type, "event bindings")
             const section = e.target.closest("section")
             if (section != null) {
                 // clear input focusout timer, that will hide this Element
@@ -51,7 +104,6 @@ class DataList extends HTMLElement {
                 // wait untill focusout fires 10ms should be enough, but not too much
                 window.clearTimeout(DataList.timeoutMousedown)
                 DataList.timeoutMousedown = window.setTimeout(() => {
-                    // console.log(e.type, "event bindings")
                     // clear input focusout timer, that will hide this Element
                     window.clearTimeout(DataList.timeoutInputFocusout)
                 }, 20)
@@ -78,49 +130,74 @@ class DataList extends HTMLElement {
                 this.setAttribute("hidden", "")
             }
         })
-
-        // Create some CSS to apply to the shadow dom
-        const style = document.createElement("style")
-
-        // attach the created elements to the shadow DOM
-        this.shadowRoot.append(style, article)
     }
 
     // life-cycle callback: invoked each time the custom element is appended into a document-connected element
     connectedCallback() {
-        // console.log("Custom DataList element added to page", this.parentElement)
-        this.updateStyle()
-        this.updateBindings()
-        // Note: problem with "this.children.length", is that it returns 0
-        // it seems that this connectedCallback method is execute before the element really exist in the parent DOM
-        // to counter this issue I use observer that checks that the node is inserted to the document and really exists
-        // if (this.observer != null) this.observer.disconnect() // reset previous observer if exist
-        // this.observer = new MutationObserver((mutations) => {
-        //     this.inDom = document.body.contains(this)
-        //     if (this.inDom) {
-        //         this.observer.disconnect()
-        //         // console.log("MutationObserver: Element exist in the DOM, stopping the observer")
-        //         this.updateBindings()
-        //     }
-        // })
-        // this.observer.observe(document.body, {
-        //     childList: true,
-        //     attributeFilter: ["data-list"]
-        // })
-        // Note: it's also possible to delay this process,
-        // so the DOM is also updated before using,
-        // but the MutationObserver will execute much earlier than this timeout
-        //setTimeout(() => console.log("connectedCallback delayed:", this.children.length), 0)
+        if (!this.id) return console.warn("DataList web component does not have target 'id' set.")
+
+        const article = this.shadowRoot.querySelector("article")
+
+        // get list targets and update event bingings
+        const targets = document.querySelectorAll(`input[list="${this.id}"]`)
+
+        for (const target of targets) {
+            // listen for window resize events called from static windowResizeHandler
+            target.addEventListener("resize", (e) => {
+                try {
+                    window.clearTimeout(DataList.timeoutMousedown)
+                    window.clearTimeout(DataList.timeoutInputFocusout)
+                    this.updateStyles(article, e.target)
+                } catch (error) {
+                    console.error(`DataList input[list="${this.id}"] resize event failure`, error)
+                }
+            })
+
+            // clicking the datalist will open the UI
+            target.addEventListener("click", (e) => {
+                try {
+                    this.processChildElements()
+                    this.removeAttribute("hidden")
+                    this.updateStyles(article, e.target)
+                    this.filterRows(article, e.target.value)
+                } catch (error) {
+                    console.error(`DataList input[list="${this.id}"] click event failure`, error)
+                }
+            })
+
+            target.addEventListener("focusout", (e) => {
+                window.clearTimeout(DataList.timeoutInputFocusout)
+                DataList.timeoutInputFocusout = window.setTimeout(() => { // delayed for the click event to pass-through
+                    try {
+                        this.setAttribute("hidden", "")
+                    } catch (error) {
+                        console.error(`DataList input[list="${this.id}"] focusout event failure`, error)
+                    }
+                }, 100)
+            })
+
+            // input event with debouncing
+            target.addEventListener("input", (e) => {
+                if (!e.isTrusted) return // skip our emulated input event when selecting items from the list
+                window.clearTimeout(DataList.timeoutDebounceInput)
+                DataList.timeoutDebounceInput = window.setTimeout(() => {
+                    try {
+                        this.removeAttribute("hidden")
+                        this.filterRows(article, e.target.value)
+                    } catch (error) {
+                        console.error(`DataList input[list="${this.id}"] input event failure`, error)
+                    }
+                }, 150)
+            })
+        }
     }
 
     // life-cycle callback: Invoked each time the custom element is disconnected from the document's DOM
     disconnectedCallback() {
-        // console.log("Custom DataList element removed from page.")
         window.clearTimeout(DataList.timeoutThrottleResize)
         window.clearTimeout(DataList.timeoutDebounceInput)
         window.clearTimeout(DataList.timeoutInputFocusout)
         window.clearTimeout(DataList.timeoutMousedown)
-        // if (this.observer != null) this.observer.disconnect()
     }
 
     // life-cycle callback: Invoked each time the custom element is moved to a new document
@@ -132,98 +209,32 @@ class DataList extends HTMLElement {
     // Note: requires static observedAttributes
     // attributeChangedCallback(name, oldValue, newValue) {
     //     console.log("Custom DataList element attributes changed.", name, oldValue, newValue)
-    //     this.updateStyle()
     // }
-
-    /** bind events to `input[list]` */
-    updateBindings() {
-        if (!this.id) return console.warn("DataList web component does not have target 'id' set.")
-        const shadow = this.shadowRoot
-        /** @type {HTMLElement} */
-        const article = shadow.querySelector("article")
-        // console.log(`${this.id} event bindings`)
-
-        // get list targets and update event bingings
-        const targets = document.querySelectorAll(`input[list="${this.id}"]`)
-        if (targets.length > 0) {
-            // console.log("event bindings has targets:", targets.length)
-            targets.forEach((target) => {
-                // console.log("event bindings has target:", target)
-
-                target.addEventListener("resize", (e) => {
-                    try {
-                        // console.log(e.type, "event bindings")
-                        window.clearTimeout(DataList.timeoutMousedown)
-                        window.clearTimeout(DataList.timeoutInputFocusout)
-                        this.updateSize(article, e.target)
-                    } catch (error) {
-                        console.error("DataList input[list] resize event failure", error)
-                    }
-                })
-
-                // clicking the datalist will open the UI
-                target.addEventListener("click", (e) => {
-                    // console.log(e.type, "event bindings")
-                    this.processChildElements()
-                    this.removeAttribute("hidden")
-                    this.updateSize(article, e.target)
-                    this.filterRows(article, e.target.value)
-                })
-
-                target.addEventListener("focusout", (e) => {
-                    // console.log(e.type, "event bindings")
-                    window.clearTimeout(DataList.timeoutInputFocusout)
-                    DataList.timeoutInputFocusout = window.setTimeout(() => { // delayed for the click event to pass-through
-                        this.setAttribute("hidden", "")
-                    }, 100)
-                })
-
-                // input event with debouncing
-                target.addEventListener("input", (e) => {
-                    if (!e.isTrusted) return // skip our emulated input event when selecting items from the list
-                    clearTimeout(DataList.timeoutDebounceInput)
-                    DataList.timeoutDebounceInput = setTimeout(() => {
-                        this.removeAttribute("hidden")
-                        this.filterRows(article, e.target.value)
-                    }, 150)
-                })
-            })
-        }
-    }
 
     /**
      * create list items from child option elements
      */
     processChildElements() {
-        // console.log("processChildElements")
-        this.shadowRoot.querySelector("article").innerHTML = "" // clear all
-        if (this.children.length) {
-            for (const child of this.children) {
-                // allow option element only
-                if (child.tagName !== "OPTION") break
-                let value = child.value
-                let label = child.label // note: option.label will fallback to textContent as value(by the browser)
-
-                // console.log(`creating child option:`, child, label)
-                if (child.hasAttribute("label")) {
-                    this.add([value, label, child.textContent]) // '' | ['value', 'label', 'textContent']
-                } else {
-                    this.add([value, child.textContent]) // '' | ['value', 'label']
-                }
+        this.empty() // clear all previous
+        for (const child of this.children) {
+            if (child.tagName !== "OPTION") break
+            // note: option.label will fallback to textContent as value(by the browser)
+            if (child.hasAttribute("label")) {
+                this.add([child.value, child.label, child.textContent])
+            } else {
+                this.add([child.value, child.textContent])
             }
         }
     }
 
     // filter rows by value
     filterRows(article, value) {
-        //console.log("filterRows by search value:", value)
-        const sValue = ("" + value).toLowerCase()
-        let index = 0
         let lastVisibleChildIndex = -1
-        const children = article.children
+        const sValue = ("" + value).toLowerCase()
+
         // update section visibility
-        for (let len = children.length; index < len; index++) {
-            let child = children[index]
+        for (let index = 0, len = article.children.length; index < len; index++) {
+            let child = article.children[index]
             child.classList.remove("no-border-bottom") // reset CSS visible last border bottom
 
             // section content
@@ -242,7 +253,7 @@ class DataList extends HTMLElement {
         // update article visibility
         if (lastVisibleChildIndex > -1) {
             article.removeAttribute("hidden")
-            children[lastVisibleChildIndex].classList.add("no-border-bottom") // CSS visible last border bottom
+            article.children[lastVisibleChildIndex].classList.add("no-border-bottom") // CSS visible last border bottom
         } else {
             article.setAttribute("hidden", "")
         }
@@ -251,14 +262,14 @@ class DataList extends HTMLElement {
     /**
      * update CSS height, position, etc.
      * 
-     * @todo In fixed full screen, show input element at the top
+     * @todo In fixed state, show current input element at the top
      * 
      * @param {*} article 
      * @param {*} target 
      */
-    updateSize(article, target) {
-        let clientHeight = window.innerHeight
-        let rect = target.getBoundingClientRect()
+    updateStyles(article, target) {
+        const clientHeight = window.innerHeight
+        const rect = target.getBoundingClientRect()
         // make it begin at the element bottom
         article.style.top = `${rect.top + rect.height}px`
         article.style.left = `${rect.left}px`
@@ -282,8 +293,7 @@ class DataList extends HTMLElement {
 
     /** add items to the list */
     add(...values) {
-        const shadow = this.shadowRoot
-        const article = shadow.querySelector("article")
+        const article = this.shadowRoot.querySelector("article")
         // create value container elements
         for (const value of values) {
             if (Array.isArray(value)) {
@@ -297,7 +307,7 @@ class DataList extends HTMLElement {
         }
     }
 
-    /** add raw items to the list */
+    /** add any elements to the parent article */
     addRaw(...values) {
         this.shadowRoot.querySelector("article").append(...values)
     }
@@ -308,7 +318,7 @@ class DataList extends HTMLElement {
         option.value = value
         if (label != null && textContent != null) option.label = label
         option.textContent = textContent != null ? textContent : label
-        return option
+        return option // <option value="1" label="Title">Description</option>
     }
 
     /** create row as section element */
@@ -366,75 +376,19 @@ class DataList extends HTMLElement {
         this.shadowRoot.querySelector("article").innerHTML = ""
     }
 
-    /** update CSS container */
-    updateStyle() {
-        //const wrapMaxHeight = this.hasAttribute("height") ? this.getAttribute("height") : "50vh"
-        const shadow = this.shadowRoot
-        shadow.querySelector("style").textContent = `
-          article::-webkit-scrollbar {
-            width: .2em;
-          }
-          article::-webkit-scrollbar-track {
-            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-          }
-          article::-webkit-scrollbar-thumb {
-            background-color: darkgrey;
-            outline: 1px solid slategrey;
-          }
-          article {
-            position: absolute;
-            top: 1em;
-            left: 2em;
-            z-index: 99999;
-            box-sizing: border-box;
-            max-height: 50vh;
-            border-width: 1px;
-            border-color: #cccccc;
-            border-style: solid;
-            border-radius: 0.4em;
-            background-color: #ffffff;
-            overflow-y: auto;
-            font-family: system-ui;
-          }
-          [hidden] { display: none; }
-          section {
-            margin: 0 0.5em;
-            padding: 0.5em 0;
-            border-bottom-width: 1px;
-            border-bottom-color: #cccccc;
-            border-bottom-style: solid;
-          }
-          .no-border-bottom,
-          section:last-child {
-            border-bottom: none;
-          }
-          section h2 {
-            margin-top: 0.25em;
-            margin-bottom: 0.25em;
-            font-size: 1em;
-            font-weight: normal;
-            color: #000000;
-          }
-          section p {
-            margin-top: 0.25em;
-            margin-bottom: 0.25em;
-            color: #626262;
-          }`
-    }
-
     static windowResizeHandler(event) {
-        try {
-            if (DataList.timeoutThrottleResize != null) return
-            DataList.timeoutThrottleResize = setTimeout(() => {
+        if (DataList.timeoutThrottleResize != null) return
+        DataList.timeoutThrottleResize = window.setTimeout(() => {
+            try {
                 DataList.timeoutThrottleResize = null
                 const targets = document.querySelectorAll("input[list]") // binded to these inputs
                 for (const target of targets) {
                     target.dispatchEvent(new Event("resize"))
                 }
-            }, 200)
-        } catch (error) {
-            console.error("DataList window resize event failure", error)
-        }
+            } catch (error) {
+                console.error("DataList window resize event failure", error)
+            }
+        }, 200)
     }
 }
 customElements.define("data-list", DataList)
