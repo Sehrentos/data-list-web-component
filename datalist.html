@@ -171,6 +171,33 @@
                 </data-list>
         </fieldset>
     </form>
+    <div id="sample"></div>
+    <script>
+        // add new list after page init and update input 5 to use it
+        var sample = document.querySelector("#sample")
+        var input5 = document.querySelector(`input[list="list-test-5"]`)
+        setTimeout(() => {
+            console.log("new list added and input 5 is now using it")
+            input5.setAttribute("list", "list-test-x")
+            sample.innerHTML = `<data-list id="list-test-x">
+                <option value="test-1" label="Value 1">Lorem description...</option>
+                <option value="test-2">Value 2</option>
+                <option value="test-3"></option>
+                <option value="test-4"></option>
+                <option value="test-5"></option>
+                <option value="test-6"></option>
+                <option value="test-7"></option>
+                <option value="test-8"></option>
+                <option value="test-9"></option>
+                <option value="test-10"></option>
+                <option value="test-11"></option>
+                <option value="test-12"></option>
+                <option value="test-13"></option>
+                <option value="test-14"></option>
+                <option value="test-15"></option>
+            </data-list>`
+        }, 2000)
+    </script>
 </body>
 
 </html>
