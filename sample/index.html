@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UIDataList web component</title>
+    <meta name="description" content="ui-datalist web component sample">
+    <style>
+        form {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            /*align-items: flex-start;*/
+            align-content: space-between;
+            row-gap: 2em;
+            /*column-gap: 1em;*/
+            margin: 1em;
+            padding: 3em 2em;
+            border: 1px solid #bbbbbb;
+        }
+
+        form header {
+            font-size: 150%;
+            width: 100%;
+        }
+
+        form fieldset {
+            border-width: 1px;
+            border-radius: 0.4em;
+            margin: 0;
+        }
+
+        form fieldset input {
+            width: max-content;
+            /*outline: 0;
+            border: none;*/
+        }
+    </style>
+    <script type="module">
+        import UIDataList from "./UIDataList.js";
+        console.log('[UIDataList]: anything in the DOM?', UIDataList.datalists)
+    </script>
+</head>
+
+<body>
+    <form id="details">
+        <header>Custom DataList sample</header>
+        <fieldset>
+            <legend>Test-1</legend>
+            <input type="text" id="test-1" name="test-1" list="list-test-1" />
+            <ui-datalist id="list-test-1">
+                <option value="test-1" label="Value 1">Lorem description...</option>
+                <option value="test-2">Value 2</option>
+                <option value="test-3"></option>
+                <option value="test-4"></option>
+                <option value="test-5"></option>
+                <option value="test-6"></option>
+                <option value="test-7"></option>
+                <option value="test-8"></option>
+                <option value="test-9"></option>
+                <option value="test-10"></option>
+                <option value="test-11"></option>
+                <option value="test-12"></option>
+                <option value="test-13"></option>
+                <option value="test-14"></option>
+                <option value="test-15"></option>
+            </ui-datalist>
+        </fieldset>
+        <fieldset>
+            <legend>Test-2</legend>
+            <input type="text" id="test-2" name="test-2" list="list-test-2" />
+            <ui-datalist id="list-test-2">
+                <option value="test-1" label="Value 1">Lorem description...</option>
+                <option value="test-2">Value 2</option>
+                <option value="test-3"></option>
+                <option value="test-4"></option>
+                <option value="test-5"></option>
+                <option value="test-6"></option>
+                <option value="test-7"></option>
+                <option value="test-8"></option>
+                <option value="test-9"></option>
+                <option value="test-10"></option>
+                <option value="test-11"></option>
+                <option value="test-12"></option>
+                <option value="test-13"></option>
+                <option value="test-14"></option>
+                <option value="test-15"></option>
+            </ui-datalist>
+        </fieldset>
+        <fieldset>
+            <legend>Test-3</legend>
+            <input type="text" id="test-3" name="test-3" list="list-test-3" />
+            <ui-datalist id="list-test-3">
+                <option value="test-1" label="Value 1">Lorem description...</option>
+                <option value="test-2">Value 2</option>
+                <option value="test-3">Value 3</option>
+                <option value="test-4">Value 4</option>
+                <option value="test-5"></option>
+                <option value="test-6"></option>
+                <option value="test-7"></option>
+                <option value="test-8"></option>
+                <option value="test-9"></option>
+                <option value="test-10"></option>
+                <option value="test-11"></option>
+                <option value="test-12"></option>
+                <option value="test-13"></option>
+                <option value="test-14"></option>
+                <option value="test-15"></option>
+            </ui-datalist>
+        </fieldset>
+        <fieldset>
+            <legend>Test-4</legend>
+            <input type="text" id="test-4" name="test-4" list="list-test-4" />
+            <ui-datalist id="list-test-4">
+                <option value="test-1" label="Value 1">Lorem description...</option>
+                <option value="test-2">Value 2</option>
+                <option value="test-3"></option>
+                <option value="test-4"></option>
+                <option value="test-5"></option>
+                <option value="test-6"></option>
+                <option value="test-7"></option>
+                <option value="test-8"></option>
+                <option value="test-9"></option>
+                <option value="test-10"></option>
+                <option value="test-11"></option>
+                <option value="test-12"></option>
+                <option value="test-13"></option>
+                <option value="test-14"></option>
+                <option value="test-15"></option>
+            </ui-datalist>
+        </fieldset>
+        <fieldset>
+            <legend>Test-5</legend>
+            <input type="text" id="test-5" name="test-5" list="list-test-5" />
+            <ui-datalist id="list-test-5">
+                <option value="test-1" label="Value 1">Lorem description...</option>
+                <option value="test-2">Value 2</option>
+                <option value="test-3"></option>
+                <option value="test-4"></option>
+                <option value="test-5"></option>
+                <option value="test-6"></option>
+                <!---<option value="test-7"></option>
+                <option value="test-8"></option>
+                <option value="test-9"></option>
+                <option value="test-10"></option>
+                <option value="test-11"></option>
+                <option value="test-12"></option>
+                <option value="test-13"></option>
+                <option value="test-14"></option>
+                <option value="test-15"></option>--->
+            </ui-datalist>
+        </fieldset>
+        <fieldset>
+            <legend>Test-6 (normal datalist)</legend>
+            <input type="text" id="test-6" name="test-6" list="list-test-6" />
+            <datalist id="list-test-6">
+                <option value="test-1" label="Value 1">Lorem description...</option>
+                <option value="test-2">Value 2</option>
+                <option value="test-3"></option>
+                <option value="test-4"></option>
+                <option value="test-5"></option>
+                <option value="test-6"></option>
+                <option value="test-7"></option>
+                <option value="test-8"></option>
+                <option value="test-9"></option>
+                <option value="test-10"></option>
+                <option value="test-11"></option>
+                <option value="test-12"></option>
+                <option value="test-13"></option>
+                <option value="test-14"></option>
+                <option value="test-15"></option>
+                </ui-datalist>
+        </fieldset>
+    </form>
+    <div id="sample"></div>
+    <script>
+        // add new list after page init and update input 5 to use it
+        var sample = document.querySelector("#sample")
+        var input5 = document.querySelector(`input[list="list-test-5"]`)
+        setTimeout(() => {
+            console.log("new list added and 'list-test-5' is now using it")
+            input5.setAttribute("list", "list-test-x")
+            sample.innerHTML = `<ui-datalist id="list-test-x">
+                <option value="test-1" label="Value 1">Lorem description...</option>
+                <option value="test-2">Value 2</option>
+                <option value="test-3"></option>
+                <option value="test-4"></option>
+                <option value="test-5"></option>
+                <option value="test-6"></option>
+                <option value="test-7"></option>
+                <option value="test-8"></option>
+                <option value="test-9"></option>
+                <option value="test-10"></option>
+                <option value="test-11"></option>
+                <option value="test-12"></option>
+                <option value="test-13"></option>
+                <option value="test-14"></option>
+                <option value="test-15"></option>
+            </ui-datalist>`
+        }, 2000)
+    </script>
+    <!-- Customize list style -->
+    <!-- you can use ::part(base|section|section-title|section-content) to customize -->
+    <style>
+        ui-datalist#list-test-2::part(base) {
+            background-color: rgb(255, 0, 128);
+        }
+
+        ui-datalist#list-test-2::part(section-title) {
+            color: rgb(250, 250, 250);
+        }
+
+        ui-datalist#list-test-2::part(section-content) {
+            color: rgb(250, 250, 250);
+        }
+
+        ui-datalist#list-test-3::part(base) {
+            background-color: rgb(60, 255, 0);
+        }
+
+        ui-datalist#list-test-4::part(base) {
+            background-color: rgb(0, 183, 255);
+        }
+    </style>
+</body>
+
+</html>

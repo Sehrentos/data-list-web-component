@@ -1,0 +1,26 @@
+{
+  "private": true,
+  "name": "ui-datalist-web-component",
+  "version": "1.0.0",
+  "description": "Custom web component of the normal datalist element",
+  "main": "UIDataList.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sehrentos/ui-datalist-web-component.git"
+  },
+  "keywords": [
+    "web",
+    "component",
+    "datalist",
+    "ui-datalist"
+  ],
+  "author": "Niko Hyrkäs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Sehrentos/ui-datalist-web-component/issues"
+  },
+  "homepage": "https://github.com/Sehrentos/ui-datalist-web-component#readme"
+}
